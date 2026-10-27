@@ -120,6 +120,19 @@ class RuntimeConfig(BaseModel):
         return normalized
 
     @field_validator(
+        "memory_source_count_threshold",
+        "topic_memory_source_count_threshold",
+        mode="before",
+    )
+    @classmethod
+    def reject_unstrict_source_count_threshold(cls, value: Any) -> Any:
+        if value is None:
+            return None
+        if isinstance(value, bool) or not isinstance(value, int):
+            raise ValueError("source count threshold must be a positive integer")  # noqa: TRY003
+        return value
+
+    @field_validator(
         "memory_max_workers",
         "topic_memory_max_workers",
         "experience_max_workers",
@@ -207,6 +220,8 @@ class RuntimeConfig(BaseModel):
     generation_concurrency: int = Field(default=4, ge=1, le=64)
     dream_budget: DreamBudget = Field(default_factory=DreamBudget)
     topic_memory_schedule_seconds: float | None = Field(default=None, gt=0)
+    memory_source_count_threshold: int | None = Field(default=None, ge=1)
+    topic_memory_source_count_threshold: int | None = Field(default=None, ge=1)
     topic_memory_source_window_limit: int = Field(default=10, ge=1)
     topic_memory_history_max_candidates: int = Field(default=20, ge=1, le=MAX_TOPIC_MEMORY_SEARCH_LIMIT)
     topic_memory_history_rrf_threshold: int = Field(default=70, ge=0, le=100)
