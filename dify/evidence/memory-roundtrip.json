@@ -1,0 +1,13 @@
+{
+  "transport": "builtin-runtime",
+  "database": "/tmp/innkeeper-vxto4nmf/inn.db",
+  "scope_id": "scp_769s4tkbxnhrd5ynhq89gsqahm",
+  "turn_one_hits": [
+    "旧账：旅客把一只青蛙放进了老汤的汤里"
+  ],
+  "turn_two_hits": [
+    "旧账：旅客又点了一碗汤，并说这次付钱",
+    "旧账：旅客把一只青蛙放进了老汤的汤里"
+  ],
+  "ok": true
+}

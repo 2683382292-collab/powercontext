@@ -1,0 +1,409 @@
+app:
+  description: 会记仇也会记恩的酒馆老板。同一位旅客换一场新对话，老汤仍会翻出 PowerContext 里的旧账。
+  icon: 🍲
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 老汤的记仇酒馆
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.3.0
+workflow:
+  conversation_variables: []
+  environment_variables:
+  - description: PowerContext 根地址，不要带末尾斜杠。Dify 跑在 Docker 里时不要用 127.0.0.1。
+    id: 6f0c1a10-7b2e-4d11-9a01-a10000000001
+    name: POWERCONTEXT_URL
+    value: http://127.0.0.1:8000
+    value_type: string
+  - description: 这位旅客的 scope_id。换一位旅客就换一个新 scope。
+    id: 6f0c1a10-7b2e-4d11-9a01-a10000000002
+    name: POWERCONTEXT_SCOPE
+    value: replace-with-scope-id
+    value_type: string
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: 灶上的汤还热着。你要喝汤、闹事，还是想把上次的账赖掉？说吧。
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions:
+    - 老板，给我来一碗热汤
+    - 我把一只青蛙放进了你的汤里
+    - 再来一碗，这次我付钱
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: 1001-source-1002-target
+      source: '1001'
+      sourceHandle: source
+      target: '1002'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: http-request
+      id: 1002-source-1003-target
+      source: '1002'
+      sourceHandle: source
+      target: '1003'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: llm
+      id: 1003-source-1004-target
+      source: '1003'
+      sourceHandle: source
+      target: '1004'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: 1004-source-1005-target
+      source: '1004'
+      sourceHandle: source
+      target: '1005'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: http-request
+      id: 1005-source-1006-target
+      source: '1005'
+      sourceHandle: source
+      target: '1006'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: answer
+      id: 1006-source-1007-target
+      source: '1006'
+      sourceHandle: source
+      target: '1007'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 旅客开口
+        type: start
+        variables: []
+      height: 54
+      id: '1001'
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      type: custom
+      width: 244
+    - data:
+        code: |
+          import json
+
+          def main(user_text: str, scope_id: str) -> dict:
+              query = (user_text or "").strip() or "旅客进了酒馆"
+              body = {
+                  "scope_id": (scope_id or "").strip(),
+                  "query": "旧账",
+                  "limit": 5,
+                  "mode": "fts",
+              }
+              return {"search_body": json.dumps(body, ensure_ascii=False), "user_text": query}
+        code_language: python3
+        desc: 把旅客这句话收成 PowerContext 检索请求，避免引号把 JSON 截断。
+        outputs:
+          search_body:
+            children: null
+            type: string
+          user_text:
+            children: null
+            type: string
+        selected: false
+        title: 组装检索
+        type: code
+        variables:
+        - value_selector:
+          - sys
+          - query
+          variable: user_text
+        - value_selector:
+          - env
+          - POWERCONTEXT_SCOPE
+          variable: scope_id
+      height: 98
+      id: '1002'
+      position:
+        x: 380
+        y: 282
+      positionAbsolute:
+        x: 380
+        y: 282
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          type: no-auth
+          config: null
+        body:
+          type: raw-text
+          data:
+          - id: search-body
+            type: text
+            value: '{{#1002.search_body#}}'
+        desc: 在这位旅客的 scope 里检索旧账。
+        headers: 'Content-Type:application/json'
+        method: post
+        params: ''
+        retry_config:
+          retry_enabled: true
+          max_retries: 2
+          retry_interval: 100
+        selected: false
+        ssl_verify: false
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 翻旧账
+        type: http-request
+        url: '{{#env.POWERCONTEXT_URL#}}/v1/memory/search'
+        variables: []
+      height: 120
+      id: '1003'
+      position:
+        x: 680
+        y: 282
+      positionAbsolute:
+        x: 680
+        y: 282
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: 老汤根据旧账回嘴，并写出要记住的一句。
+        memory:
+          query_prompt_template: ''
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 10
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini
+          provider: langgenius/openai/openai
+        prompt_template:
+        - id: prompt-system
+          role: system
+          text: |
+            你是酒馆老板「老汤」。你记仇，也记恩，说话短、口语、带点火气，但不辱骂。
+            你只能使用下面这份 PowerContext 旧账，不能编造账上没有的事。
+            每条旧账都以「旧账」开头。hits 为空时，就当第一次见面。
+            旧账里如果出现青蛙、赖账、小费或具体碗数，回复里必须点出那件事。
+            只输出一个 JSON 对象，不要 Markdown：
+            {"reply":"对旅客说的话","memory":"一句不超过40字的新账，写清旅客刚才做了什么"}
+        - id: prompt-user
+          role: user
+          text: |
+            PowerContext 旧账（检索原文，可能是空的 hits）：
+            {{#1003.body#}}
+
+            旅客现在说：
+            {{#1002.user_text#}}
+        selected: false
+        title: 老汤回嘴
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 98
+      id: '1004'
+      position:
+        x: 980
+        y: 282
+      positionAbsolute:
+        x: 980
+        y: 282
+      type: custom
+      width: 244
+    - data:
+        code: |
+          import json
+
+          def main(llm_text: str, user_text: str, scope_id: str) -> dict:
+              raw = (llm_text or "").strip()
+              if raw.startswith("```"):
+                  raw = raw.strip("`")
+                  if raw.lower().startswith("json"):
+                      raw = raw[4:]
+                  raw = raw.strip()
+              reply = raw or "汤还在，你先把话说完。"
+              memory = (user_text or "").strip() or "旅客进了酒馆"
+              try:
+                  data = json.loads(raw)
+              except Exception:
+                  data = None
+              if isinstance(data, dict):
+                  reply = str(data.get("reply") or reply).strip() or reply
+                  memory = str(data.get("memory") or memory).strip() or memory
+              memory = memory.replace("\n", " ")[:180]
+              if not memory.startswith("旧账"):
+                  memory = "旧账：" + memory
+              body = {
+                  "scope_id": (scope_id or "").strip(),
+                  "kind": "innkeeper-grudge",
+                  "text": memory,
+                  "reason": "traveler turn",
+              }
+              return {
+                  "reply": reply,
+                  "remember_body": json.dumps(body, ensure_ascii=False),
+              }
+        code_language: python3
+        desc: 拆出回复，并写成 PowerContext 记账请求。
+        outputs:
+          reply:
+            children: null
+            type: string
+          remember_body:
+            children: null
+            type: string
+        selected: false
+        title: 拆回复并记账
+        type: code
+        variables:
+        - value_selector:
+          - '1004'
+          - text
+          variable: llm_text
+        - value_selector:
+          - '1002'
+          - user_text
+          variable: user_text
+        - value_selector:
+          - env
+          - POWERCONTEXT_SCOPE
+          variable: scope_id
+      height: 98
+      id: '1005'
+      position:
+        x: 1280
+        y: 282
+      positionAbsolute:
+        x: 1280
+        y: 282
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          type: no-auth
+          config: null
+        body:
+          type: raw-text
+          data:
+          - id: remember-body
+            type: text
+            value: '{{#1005.remember_body#}}'
+        desc: 把这一轮的账写进同一 scope，下一场对话还能翻到。
+        headers: 'Content-Type:application/json'
+        method: post
+        params: ''
+        retry_config:
+          retry_enabled: true
+          max_retries: 2
+          retry_interval: 100
+        selected: false
+        ssl_verify: false
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 记下这一笔
+        type: http-request
+        url: '{{#env.POWERCONTEXT_URL#}}/v1/memory/remember'
+        variables: []
+      height: 120
+      id: '1006'
+      position:
+        x: 1580
+        y: 282
+      positionAbsolute:
+        x: 1580
+        y: 282
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1005.reply#}}'
+        desc: ''
+        selected: false
+        title: 端给旅客
+        type: answer
+        variables: []
+      height: 105
+      id: '1007'
+      position:
+        x: 1880
+        y: 282
+      positionAbsolute:
+        x: 1880
+        y: 282
+      type: custom
+      width: 244
+    viewport:
+      x: 0
+      y: 0
+      zoom: 0.7
