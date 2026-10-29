@@ -1,0 +1,116 @@
+{
+  "path": "dsl-code-nodes-and-http",
+  "dsl": "dify/dsl/grumpy-innkeeper.yml",
+  "node_order": [
+    "1002",
+    "1003",
+    "1004",
+    "1005",
+    "1006",
+    "1007"
+  ],
+  "http_routes": [
+    "/v1/scopes",
+    "/v1/memory/search",
+    "/v1/memory/remember"
+  ],
+  "base_url": "http://127.0.0.1:37393",
+  "scope_id": "scp_6rm82x125r5m3zqdjkesv2ztd1",
+  "turns": [
+    {
+      "conversation": "new",
+      "user": "我把一只青蛙放进了你的汤里",
+      "node_1002_search_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\", \"query\": \"旧账\", \"limit\": 5, \"mode\": \"fts\"}",
+      "node_1003_http": {
+        "status": 200,
+        "response": {
+          "mode": "fts",
+          "hits": []
+        }
+      },
+      "node_1004_model_json": {
+        "reply": "第一次进门。你说「我把一只青蛙放进了你的汤里」，这笔记下了。",
+        "memory": "我把一只青蛙放进了你的汤里"
+      },
+      "node_1005_remember_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\", \"kind\": \"innkeeper-grudge\", \"text\": \"旧账：我把一只青蛙放进了你的汤里\", \"reason\": \"traveler turn\"}",
+      "node_1006_http": {
+        "status": 200,
+        "response": {
+          "scope_id": "scp_6rm82x125r5m3zqdjkesv2ztd1",
+          "text": "旧账：我把一只青蛙放进了你的汤里",
+          "revision": 1
+        }
+      },
+      "node_1007_answer": "第一次进门。你说「我把一只青蛙放进了你的汤里」，这笔记下了。"
+    },
+    {
+      "conversation": "new",
+      "user": "再来一碗，这次我付钱",
+      "node_1002_search_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\", \"query\": \"旧账\", \"limit\": 5, \"mode\": \"fts\"}",
+      "node_1003_http": {
+        "status": 200,
+        "response": {
+          "mode": "fts",
+          "hits": [
+            {
+              "text": "旧账：我把一只青蛙放进了你的汤里",
+              "score": 0.01639344262295082
+            }
+          ]
+        }
+      },
+      "node_1004_model_json": {
+        "reply": "青蛙的账还在。你现在说「再来一碗，这次我付钱」，汤可以续，但这只青蛙我记得。",
+        "memory": "再来一碗，这次我付钱"
+      },
+      "node_1005_remember_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\", \"kind\": \"innkeeper-grudge\", \"text\": \"旧账：再来一碗，这次我付钱\", \"reason\": \"traveler turn\"}",
+      "node_1006_http": {
+        "status": 200,
+        "response": {
+          "scope_id": "scp_6rm82x125r5m3zqdjkesv2ztd1",
+          "text": "旧账：再来一碗，这次我付钱",
+          "revision": 2
+        }
+      },
+      "node_1007_answer": "青蛙的账还在。你现在说「再来一碗，这次我付钱」，汤可以续，但这只青蛙我记得。"
+    }
+  ],
+  "ok": true,
+  "server_access_log": [
+    {
+      "method": "POST",
+      "path": "/v1/scopes",
+      "status": 200,
+      "request_body": "{\"title\": \"老汤的记仇酒馆\", \"summary\": \"一位旅客的旧账\", \"idempotency_key\": \"dsl-http-98636\"}",
+      "response_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\"}"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/memory/search",
+      "status": 200,
+      "request_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\", \"query\": \"旧账\", \"limit\": 5, \"mode\": \"fts\"}",
+      "response_body": "{\"mode\": \"fts\", \"hits\": []}"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/memory/remember",
+      "status": 200,
+      "request_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\", \"kind\": \"innkeeper-grudge\", \"text\": \"旧账：我把一只青蛙放进了你的汤里\", \"reason\": \"traveler turn\"}",
+      "response_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\", \"text\": \"旧账：我把一只青蛙放进了你的汤里\", \"revision\": 1}"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/memory/search",
+      "status": 200,
+      "request_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\", \"query\": \"旧账\", \"limit\": 5, \"mode\": \"fts\"}",
+      "response_body": "{\"mode\": \"fts\", \"hits\": [{\"text\": \"旧账：我把一只青蛙放进了你的汤里\", \"score\": 0.01639344262295082}]}"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/memory/remember",
+      "status": 200,
+      "request_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\", \"kind\": \"innkeeper-grudge\", \"text\": \"旧账：再来一碗，这次我付钱\", \"reason\": \"traveler turn\"}",
+      "response_body": "{\"scope_id\": \"scp_6rm82x125r5m3zqdjkesv2ztd1\", \"text\": \"旧账：再来一碗，这次我付钱\", \"revision\": 2}"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+DSL dify/dsl/grumpy-innkeeper.yml
+HTTP http://127.0.0.1:37393
+scope scp_6rm82x125r5m3zqdjkesv2ztd1
+nodes 1002 -> 1003 -> 1004 -> 1005 -> 1006 -> 1007
+
+USER 我把一只青蛙放进了你的汤里
+SEARCH 200 {"scope_id": "scp_6rm82x125r5m3zqdjkesv2ztd1", "query": "旧账", "limit": 5, "mode": "fts"}
+SEARCH_RESPONSE {"mode": "fts", "hits": []}
+ANSWER 第一次进门。你说「我把一只青蛙放进了你的汤里」，这笔记下了。
+REMEMBER 200 {"scope_id": "scp_6rm82x125r5m3zqdjkesv2ztd1", "kind": "innkeeper-grudge", "text": "旧账：我把一只青蛙放进了你的汤里", "reason": "traveler turn"}
+
+USER 再来一碗，这次我付钱
+SEARCH 200 {"scope_id": "scp_6rm82x125r5m3zqdjkesv2ztd1", "query": "旧账", "limit": 5, "mode": "fts"}
+SEARCH_RESPONSE {"mode": "fts", "hits": [{"text": "旧账：我把一只青蛙放进了你的汤里", "score": 0.01639344262295082}]}
+ANSWER 青蛙的账还在。你现在说「再来一碗，这次我付钱」，汤可以续，但这只青蛙我记得。
+REMEMBER 200 {"scope_id": "scp_6rm82x125r5m3zqdjkesv2ztd1", "kind": "innkeeper-grudge", "text": "旧账：再来一碗，这次我付钱", "reason": "traveler turn"}

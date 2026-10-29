@@ -73,12 +73,20 @@ Server 没开鉴权时，工作流不发送 Token。如果开了鉴权，在两�
 
 ## 核对记忆
 
-不启动模型时，也可以核对同一套记账是否跨轮还在：
+证据按 `dsl/grumpy-innkeeper.yml` 的节点顺序走 HTTP，不直接调用 runtime：
+
+1. 代码节点 `1002` 用 DSL 里的 Python 拼出检索 JSON。
+2. `POST /v1/memory/search`，这就是节点 `1003` 的地址。
+3. 模型节点只读这次 HTTP 响应。没配外部模型时，脚本按提示词规则生成 JSON，再交给节点 `1005`。
+4. 节点 `1005` 用 DSL 里的 Python 拼出记账 JSON。
+5. `POST /v1/memory/remember`，这就是节点 `1006` 的地址。
+
+第二场新对话再检索「旧账」，响应里必须有上一场的青蛙，回答也必须提到青蛙。
 
 ```bash
-python dify/scripts/verify_memory.py --output dify/evidence/memory-roundtrip.json
+python dify/scripts/run_dsl_http.py --output dify/evidence/dsl-http-run.json
 ```
 
-设置了 `POWERCONTEXT_URL` 时走 HTTP，和 DSL 里的两个节点相同。没设置时走本机 PowerContext runtime。成功时打印 `"ok": true`，第一轮能检索到青蛙，第二轮同时还有青蛙和付钱。
+已经跑过的请求和响应在 `evidence/dsl-http-run.json` 与 `evidence/dsl-http-run.log`。`server_access_log` 是 HTTP 服务实际收到的报文。样例步骤见 `samples/verification.md`。
 
-已记录的一次成功结果在 `evidence/memory-roundtrip.json`。样例步骤见 `samples/verification.md`。
+已经有 PowerContext Server 时，先执行 `powercontext server run`，再设 `POWERCONTEXT_URL=http://127.0.0.1:8000` 后运行同一条命令。Dify 在 Docker 里时，把应用环境变量 `POWERCONTEXT_URL` 改成容器能访问的地址。

@@ -26,19 +26,19 @@
    - 「翻旧账」节点的响应 `hits` 里能看到含「青蛙」的旧账。
    - 这一轮结束后，再检索「旧账」时，青蛙和「付钱」两句都还在。
 
-## 不靠模型的记忆核对
+## 已记录的 DSL HTTP 执行
+
+`evidence/dsl-http-run.log` 是按当前 DSL 跑出来的两场对话。第一场检索 `hits` 为空，记账内容是「旧账：我把一只青蛙放进了你的汤里」。第二场是新对话，`POST /v1/memory/search` 的响应里有这句青蛙，回答也写出了「青蛙的账还在」。
+
+对应的完整报文，包括 HTTP 状态码和 `server_access_log`，在 `evidence/dsl-http-run.json`。路径字段是 `dsl-code-nodes-and-http`。代码节点直接取自 `dsl/grumpy-innkeeper.yml`，检索和记账是发到该文件里两个 HTTP 节点的地址。
+
+重新生成：
 
 ```bash
-python dify/scripts/verify_memory.py
+python dify/scripts/run_dsl_http.py --output dify/evidence/dsl-http-run.json
 ```
 
-成功标准：
-
-- 进程退出码为 0。
-- 第一轮检索结果包含「青蛙」。
-- 第二轮检索结果同时包含「青蛙」和「付钱」。
-
-一次已经跑通的记录见 `evidence/memory-roundtrip.json`。其中 `transport` 为 `builtin-runtime`，表示这次是直接调用 PowerContext 的记忆读写，检索词和 DSL 一样固定为「旧账」。换一台机器时重新执行脚本即可，不必依赖记录里的临时数据库路径。
+成功时进程退出码为 0，第二场检索结果包含「青蛙」，第二场回答也包含「青蛙」。
 
 ## 恢复初始状态
 
