@@ -1,0 +1,9 @@
+# 复习助手本地文件（不应提交）
+.env
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>个性化复习助手 · Powered by PowerContext</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">📚</span>
+      <div>
+        <h1>个性化复习助手</h1>
+        <p class="subtitle">记忆持久化由 PowerContext 提供</p>
+      </div>
+    </div>
+    <div id="status" class="status status-unknown">检测连接中…</div>
+  </header>
+
+  <main class="container">
+    <!-- 控制区 -->
+    <section class="card controls">
+      <div class="field">
+        <label for="learner">学习者 ID</label>
+        <input id="learner" type="text" placeholder="例如 xiaoming" autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="subject">学科</label>
+        <select id="subject"></select>
+      </div>
+      <div class="field">
+        <label for="size">每轮题量</label>
+        <input id="size" type="number" min="1" max="20" value="5" />
+      </div>
+      <div class="actions">
+        <button id="startBtn" class="btn btn-primary">开始新一轮复习</button>
+        <button id="overviewBtn" class="btn">查看学习总览</button>
+      </div>
+    </section>
+
+    <!-- 会话区 -->
+    <section id="sessionCard" class="card hidden">
+      <div class="session-head">
+        <h2>本轮复习</h2>
+        <div class="progress">
+          <span id="progressText">0 / 0</span>
+          <div class="bar"><div id="progressBar" class="bar-fill"></div></div>
+          <span id="scoreText" class="score">答对 0</span>
+        </div>
+      </div>
+
+      <div id="memoryBox" class="memory-box">
+        <div class="memory-title">🧠 助手已读取的历史记忆</div>
+        <p id="rememberedSummary" class="summary"></p>
+        <div id="weakChips" class="chips"></div>
+        <details id="recallDetails" class="recall hidden">
+          <summary>PowerContext 叙述式回忆（context/prepare）</summary>
+          <pre id="recallText"></pre>
+        </details>
+      </div>
+
+      <div id="questionBox" class="question-box"></div>
+      <div id="sessionDone" class="session-done hidden"></div>
+    </section>
+
+    <!-- 总览区 -->
+    <section id="overviewCard" class="card hidden">
+      <h2>学习总览</h2>
+      <div id="overviewTotals" class="totals"></div>
+      <h3>薄弱知识点</h3>
+      <div id="overviewWeak" class="table-wrap"></div>
+      <h3>错题本（最近）</h3>
+      <div id="overviewWrong" class="table-wrap"></div>
+      <h3>复习进度</h3>
+      <div id="overviewProgress" class="table-wrap"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>全部记忆通过 PowerContext HTTP API 持久保存 · 新开对话自动读取历史</span>
+  </footer>
+
+  <div id="toast" class="toast hidden"></div>
+  <script src="/static/app.js"></script>
+</body>
+</html>
