@@ -1,0 +1,15 @@
+"""Expense filtering for the SDD sample.
+
+The current revision filters by category. ``min_amount`` is accepted so the
+new call shape is stable, and it is not applied yet.
+"""
+
+
+def filter_expenses(expenses, *, category=None, min_amount=None):
+    """Return expenses that match the supplied filters."""
+
+    del min_amount
+    selected = list(expenses)
+    if category is not None:
+        selected = [item for item in selected if item.get("category") == category]
+    return selected

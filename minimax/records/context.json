@@ -1,0 +1,61 @@
+{
+  "task_id": "add-min-amount",
+  "task_path": "tasks/add-min-amount.md",
+  "query": "SPEC-AMT-001 SPEC-CAT-001 SPEC-COMPAT-001 filter_expenses test_min_amount test_category min_amount category",
+  "change": "实现 min_amount 闭区间筛选，并允许与 category 同时生效。",
+  "preserve": "只按 category 筛选、省略 category、空列表这三项行为保持不变。",
+  "specs": [
+    {
+      "doc_id": "spec-compat-001",
+      "symbol": "SPEC-COMPAT-001",
+      "path": "sample_app/specs/compat.md",
+      "score": 3.2034050279588704,
+      "excerpt": "# SPEC-COMPAT-001 保持原有类别行为\n\n标识：SPEC-COMPAT-001\n\n增加金额筛选后，只按 `category` 调用 `filter_expenses` 的结果必须与 SPEC-CAT-001 一致。\n空列表仍然返回空列表。不得删除类别相等判断。"
+    },
+    {
+      "doc_id": "spec-amt-001",
+      "symbol": "SPEC-AMT-001",
+      "path": "sample_app/specs/amount.md",
+      "score": 2.56986929641405,
+      "excerpt": "# SPEC-AMT-001 按最低金额筛选\n\n标识：SPEC-AMT-001\n\n`filter_expenses` 在传入 `min_amount` 时只保留 `amount` 大于或等于该值的记录。\n金额下界按半开区间比较。标记 UPDATED-MIN-AMOUNT-EXCLUSIVE。\n它可以和 `category` 同时生效。未传入 `min_amount` 时不按金额排除记录。"
+    },
+    {
+      "doc_id": "spec-cat-001",
+      "symbol": "SPEC-CAT-001",
+      "path": "sample_app/specs/category.md",
+      "score": 2.0012543095421576,
+      "excerpt": "# SPEC-CAT-001 按类别筛选\n\n标识：SPEC-CAT-001\n\n`filter_expenses` 在传入 `category` 时只保留 `category` 字段相等的记录。\n不传 `category` 时保留全部记录。输入为空列表时返回空列表。"
+    }
+  ],
+  "code": [
+    {
+      "doc_id": "code-filter",
+      "symbol": "filter_expenses",
+      "path": "sample_app/ledger.py",
+      "score": 0.6539154123187737,
+      "excerpt": "\"\"\"Expense filtering for the SDD sample.\n\nThe current revision filters by category. ``min_amount`` is accepted so the\nnew call shape is stable, and it is not applied yet.\n\"\"\"\n\n\ndef filter_expenses(expenses, *, category=None, min_amount=None):\n    \"\"\"Return expenses that match the supplied filters.\"\"\"\n\n    del min_amount\n    selected = list(expenses)\n    if category is not None:\n        selected = [item for item in selected if item.get(\"category\") == category]\n    return selected"
+    }
+  ],
+  "tests": [
+    {
+      "doc_id": "test-min-amount",
+      "symbol": "test_min_amount",
+      "path": "sample_app/tests/test_min_amount.py",
+      "score": 1.151020961773477,
+      "excerpt": "import unittest\n\nfrom ledger import filter_expenses\n\nEXPENSES = (\n    {\"id\": \"a\", \"category\": \"travel\", \"amount\": 20},\n    {\"id\": \"b\", \"category\": \"meals\", \"amount\": 80},\n    {\"id\": \"c\", \"category\": \"travel\", \"amount\": 5},\n)\n\n\nclass MinAmountFilterTest(unittest.TestCase):\n    def test_min_amount_is_inclusive(self):\n        selected = filter_expenses(EXPENSES, min_amount=20)\n        self.assertEqual([item[\"id\"] for item in selected], [\"a\", \"b\"])\n\n    def test_min_amount_combines_with_category(self):\n        selected = filter_expenses(EXPENSES, category=\"travel\", min_amount=10)\n        self.assertEqual([item[\"id\"] for item in selected], [\"a\"])\n\n\nif __name__ == \"__main__\":\n    unittest.main()"
+    },
+    {
+      "doc_id": "test-category",
+      "symbol": "test_category",
+      "path": "sample_app/tests/test_category.py",
+      "score": 0.959698873068919,
+      "excerpt": "import unittest\n\nfrom ledger import filter_expenses\n\nEXPENSES = (\n    {\"id\": \"a\", \"category\": \"travel\", \"amount\": 20},\n    {\"id\": \"b\", \"category\": \"meals\", \"amount\": 80},\n    {\"id\": \"c\", \"category\": \"travel\", \"amount\": 5},\n)\n\n\nclass CategoryFilterTest(unittest.TestCase):\n    def test_category_keeps_matching_rows(self):\n        selected = filter_expenses(EXPENSES, category=\"travel\")\n        self.assertEqual([item[\"id\"] for item in selected], [\"a\", \"c\"])\n\n    def test_omitted_category_keeps_every_row(self):\n        self.assertEqual(filter_expenses(EXPENSES), list(EXPENSES))\n\n    def test_empty_input_stays_empty(self):\n        self.assertEqual(filter_expenses((), category=\"travel\"), [])\n\n    def test_omitted_min_amount_does_not_drop_rows(self):\n        selected = filter_expenses(EXPENSES, category=\"meals\", min_amount=None)\n        self.assertEqual([item[\"id\"] for item in selected], [\"b\"])\n\n\nif __name__ == \"__main__\":\n    unittest.main()"
+    }
+  ],
+  "completed": [],
+  "pending": [
+    "让 filter_expenses 按 SPEC-AMT-001 应用 min_amount"
+  ],
+  "verification": null,
+  "state_source": null
+}

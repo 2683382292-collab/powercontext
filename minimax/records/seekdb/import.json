@@ -1,0 +1,10 @@
+{
+  "imported": [
+    "spec-amt-001",
+    "spec-cat-001",
+    "spec-compat-001",
+    "code-filter",
+    "test-min-amount",
+    "test-category"
+  ]
+}

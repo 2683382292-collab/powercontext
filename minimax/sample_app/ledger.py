@@ -1,0 +1,16 @@
+"""Expense filtering for the SDD sample.
+
+The current revision filters by category and supports an inclusive minimum
+amount filter.
+"""
+
+
+def filter_expenses(expenses, *, category=None, min_amount=None):
+    """Return expenses that match the supplied filters."""
+
+    selected = list(expenses)
+    if category is not None:
+        selected = [item for item in selected if item.get("category") == category]
+    if min_amount is not None:
+        selected = [item for item in selected if item.get("amount") >= min_amount]
+    return selected

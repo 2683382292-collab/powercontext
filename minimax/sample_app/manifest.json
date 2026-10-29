@@ -1,0 +1,44 @@
+[
+  {
+    "doc_id": "spec-amt-001",
+    "kind": "spec",
+    "path": "sample_app/specs/amount.md",
+    "symbol": "SPEC-AMT-001",
+    "title": "SPEC-AMT-001 min_amount filter"
+  },
+  {
+    "doc_id": "spec-cat-001",
+    "kind": "spec",
+    "path": "sample_app/specs/category.md",
+    "symbol": "SPEC-CAT-001",
+    "title": "SPEC-CAT-001 category filter_expenses"
+  },
+  {
+    "doc_id": "spec-compat-001",
+    "kind": "spec",
+    "path": "sample_app/specs/compat.md",
+    "symbol": "SPEC-COMPAT-001",
+    "title": "SPEC-COMPAT-001 category compatibility"
+  },
+  {
+    "doc_id": "code-filter",
+    "kind": "code",
+    "path": "sample_app/ledger.py",
+    "symbol": "filter_expenses",
+    "title": "filter_expenses ledger.py"
+  },
+  {
+    "doc_id": "test-min-amount",
+    "kind": "test",
+    "path": "sample_app/tests/test_min_amount.py",
+    "symbol": "test_min_amount",
+    "title": "test_min_amount min_amount"
+  },
+  {
+    "doc_id": "test-category",
+    "kind": "test",
+    "path": "sample_app/tests/test_category.py",
+    "symbol": "test_category",
+    "title": "test_category category regression"
+  }
+]

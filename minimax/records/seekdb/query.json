@@ -1,0 +1,36 @@
+{
+  "statement": "MATCH(title, body) AGAINST(%s)",
+  "query": "SPEC-AMT-001 SPEC-CAT-001 SPEC-COMPAT-001 filter_expenses test_min_amount test_category min_amount category",
+  "hits": [
+    {
+      "doc_id": "spec-compat-001",
+      "path": "sample_app/specs/compat.md",
+      "score": 3.2034050279588704
+    },
+    {
+      "doc_id": "spec-amt-001",
+      "path": "sample_app/specs/amount.md",
+      "score": 2.56986929641405
+    },
+    {
+      "doc_id": "spec-cat-001",
+      "path": "sample_app/specs/category.md",
+      "score": 2.0012543095421576
+    },
+    {
+      "doc_id": "test-min-amount",
+      "path": "sample_app/tests/test_min_amount.py",
+      "score": 1.151020961773477
+    },
+    {
+      "doc_id": "test-category",
+      "path": "sample_app/tests/test_category.py",
+      "score": 0.959698873068919
+    },
+    {
+      "doc_id": "code-filter",
+      "path": "sample_app/ledger.py",
+      "score": 0.6539154123187737
+    }
+  ]
+}
