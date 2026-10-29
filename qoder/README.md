@@ -96,6 +96,8 @@ qoder/
 │   └── style.css             # 样式
 ├── scripts/
 │   └── smoke_test.py         # 端到端验证样例（对真实服务发请求）
+├── showcase/
+│   └── index.html            # 项目展示网站（Qoder Sites 发布源，单文件静态页）
 └── tests/
     ├── conftest.py           # 内存版假 PowerContext（httpx.MockTransport）
     ├── test_review_service.py# 业务层测试

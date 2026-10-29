@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>个性化复习助手 · 基于 PowerContext 的复习教练</title>
+<meta name="description" content="用 PowerContext 记住每位学习者的薄弱知识点、错题与复习进度，新开对话自动回忆历史并针对性出题复盘的复习教练。">
+<style>
+  :root{
+    --ink:#0f172a; --muted:#5b6b83; --line:#e2e8f0; --bg:#f8fafc;
+    --brand:#1d4ed8; --brand-2:#7c3aed; --code-bg:#0b1220; --code-ink:#e2e8f0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.75}
+  a{color:var(--brand);text-decoration:none}
+  .wrap{max-width:980px;margin:0 auto;padding:0 24px}
+  /* Hero */
+  header{background:linear-gradient(135deg,#0b1f4b 0%,#1d4ed8 55%,#7c3aed 100%);color:#fff;padding:72px 0 64px}
+  .eyebrow{display:inline-block;font-size:13px;letter-spacing:.12em;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);padding:4px 12px;border-radius:999px;margin-bottom:18px}
+  header h1{font-size:40px;line-height:1.25;margin-bottom:14px}
+  header p.sub{font-size:17px;max-width:720px;color:#e3e9ff}
+  .badges{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
+  .badges span{font-size:12.5px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);padding:3px 10px;border-radius:6px}
+  .cta{margin-top:28px;display:flex;flex-wrap:wrap;gap:12px}
+  .btn{display:inline-block;padding:10px 20px;border-radius:8px;font-size:15px;font-weight:600}
+  .btn.solid{background:#fff;color:#12306e}
+  .btn.ghost{border:1px solid rgba(255,255,255,.55);color:#fff}
+  /* Sections */
+  section{padding:56px 0}
+  section + section{border-top:1px solid var(--line)}
+  h2{font-size:26px;margin-bottom:8px}
+  h2 .no{color:var(--brand);margin-right:8px}
+  p.lead{color:var(--muted);margin-bottom:26px;max-width:760px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px}
+  .card h3{font-size:17px;margin-bottom:8px}
+  .card p{font-size:14.5px;color:var(--muted)}
+  .card .tag{display:inline-block;font-size:12px;color:var(--brand);background:#eef2ff;border-radius:5px;padding:1px 8px;margin-bottom:10px}
+  /* Code */
+  pre{background:var(--code-bg);color:var(--code-ink);border-radius:10px;padding:18px 20px;overflow-x:auto;font-size:13.5px;line-height:1.7;font-family:"Cascadia Code",Consolas,"JetBrains Mono",monospace}
+  pre .c{color:#7d8ea8}
+  code.inline{background:#eef2ff;color:#3730a3;border-radius:5px;padding:1px 6px;font-size:13px;font-family:Consolas,monospace}
+  /* Table */
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14px}
+  th,td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f1f5f9;font-weight:600}
+  tr:last-child td{border-bottom:none}
+  /* Screenshots */
+  .shot{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .shot .ph{height:220px;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:14px;background:repeating-linear-gradient(45deg,#f1f5f9,#f1f5f9 12px,#e8edf4 12px,#e8edf4 24px);text-align:center;padding:0 20px}
+  .shot figcaption{padding:12px 16px;font-size:13.5px;color:var(--muted);border-top:1px solid var(--line)}
+  .shot img{width:100%;display:block}
+  /* Steps */
+  ol.steps{counter-reset:s;list-style:none;display:grid;gap:14px}
+  ol.steps li{counter-increment:s;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px 16px 56px;position:relative;font-size:14.5px}
+  ol.steps li::before{content:counter(s);position:absolute;left:16px;top:14px;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:14px}
+  ol.steps b{display:block;margin-bottom:4px;font-size:15px}
+  .expect{color:#047857;font-size:13.5px}
+  footer{background:#0b1220;color:#94a3b8;padding:34px 0;font-size:13.5px}
+  footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+  @media (max-width:640px){header h1{font-size:30px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="eyebrow">Qoder × OceanBase 参赛作品 · Qoder + PowerContext</span>
+    <h1>个性化复习助手<br>一个越用越懂你的复习教练</h1>
+    <p class="sub">复习时找不到上学期的错题、刷题不分掌握与否、每次复习都从零开始？本项目用 PowerContext
+      记住每位学习者的<strong>薄弱知识点、错题与复习进度</strong>，新开对话自动回忆历史并<strong>针对性出题复盘</strong>。</p>
+    <div class="badges">
+      <span>FastAPI 后端</span><span>原生网页前端</span><span>无模型即可运行</span>
+      <span>每学习者记忆隔离</span><span>后端无状态可随时重启</span>
+    </div>
+    <div class="cta">
+      <a class="btn solid" href="https://github.com/2683382292-collab/powercontext/tree/2026-competition-ecosystem/qoder" target="_blank" rel="noopener">代码仓库</a>
+      <a class="btn ghost" href="#start">运行说明</a>
+      <a class="btn ghost" href="#verify">验证样例</a>
+    </div>
+  </div>
+</header>
+
+<section id="problem">
+  <div class="wrap">
+    <h2><span class="no">01</span>解决的问题</h2>
+    <p class="lead">从自己真实的复习痛点出发：错过的题还会再错，因为"薄弱点"从来没有被系统地记住。</p>
+    <div class="grid">
+      <div class="card"><h3>薄弱点记不住</h3><p>错题和易错知识点散落在笔记、试卷和聊天记录里，考前想复盘却找不全、理不清。</p></div>
+      <div class="card"><h3>出题没有针对性</h3><p>刷题不区分已掌握和未掌握的内容，会做的反复做、不会的总漏掉，复习效率低。</p></div>
+      <div class="card"><h3>进度不留痕</h3><p>每次复习都从零开始，没有纵向对比，看不到自己哪些知识点在进步、哪些仍在退步。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <h2><span class="no">02</span>核心功能</h2>
+    <p class="lead">三大功能闭环：作答即记录、开新对话即回忆、网页即交互入口。</p>
+    <div class="grid">
+      <div class="card"><span class="tag">功能 1 · 记忆记录</span><h3>薄弱点 / 错题 / 进度持久化</h3>
+        <p>每次作答自动判分：答错追加一条错题事件；无论对错都刷新该知识点的薄弱点快照（尝试次数、错误次数）与本轮复习进度，全部写入 PowerContext 长期保存。</p></div>
+      <div class="card"><span class="tag">功能 2 · 记忆复用</span><h3>新开对话自动回忆 + 针对性出题</h3>
+        <p>开启新一轮复习时先读取历史记忆：优先重练最近错题，再靶向错误次数最多的知识点，最后用诊断题补齐；没有任何历史时自动出诊断题摸清基础。</p></div>
+      <div class="card"><span class="tag">功能 3 · 网页交互</span><h3>单页网页前端</h3>
+        <p>浏览器内完成开始复习、作答与解析查看、薄弱知识点列表、错题本、复习进度总览；顶部实时显示 PowerContext 连接状态。</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="powercontext">
+  <div class="wrap">
+    <h2><span class="no">03</span>PowerContext 在项目中的实际作用</h2>
+    <p class="lead">PowerContext 作为记忆与上下文引擎：记忆被保存，并在后续每一次"新对话"中被真实复用——不是仅安装或测试连接。</p>
+    <table>
+      <tr><th>记忆 kind</th><th>写入时机</th><th>主要内容</th><th>复用方式</th></tr>
+      <tr><td><code class="inline">wrong_question</code></td><td>答错时追加一条</td><td>题目、选项、正确/所选项、时间</td><td>新会话优先重练最近错题；错题本展示</td></tr>
+      <tr><td><code class="inline">weak_point</code></td><td>每次作答刷新快照</td><td>学科、知识点、尝试/错误次数</td><td>按错误次数排序靶向出题；总览排序</td></tr>
+      <tr><td><code class="inline">review_progress</code></td><td>每次作答刷新快照</td><td>会话、题数、正确数、薄弱点列表</td><td>复习进度总览与正确率统计</td></tr>
+    </table>
+    <p class="lead" style="margin-top:22px">读写全部通过 PowerContext HTTP API 完成：<code class="inline">POST /v1/scopes</code>（每学习者一个隔离 Scope）、
+      <code class="inline">POST /v1/memory/remember</code>（写记忆）、<code class="inline">POST /v1/memory/entries/list</code>（读历史）、
+      <code class="inline">POST /v1/context/prepare</code>（生成叙述式回忆展示给学习者）、<code class="inline">GET /health/live</code>（连接探针）。</p>
+    <pre><span class="c"># 记忆闭环示意：答错 → 写入 → 新对话读回 → 靶向出题</span>
+作答 POST /api/answer  ──►  /v1/memory/remember   写入 wrong_question + weak_point + review_progress
+新会话 POST /api/session/start  ──►  /v1/memory/entries/list  读回历史
+        └─► 错题重练 → 靶向薄弱点 → 诊断补齐；并调用 /v1/context/prepare 生成"助手回忆"</pre>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="wrap">
+    <h2><span class="no">04</span>演示截图</h2>
+    <p class="lead">本地启动后（http://127.0.0.1:8080/）按下列场景截图替换占位图。</p>
+    <!-- 发布前请替换：将下面每个 .ph 占位块换成 <img src="screenshots/xxx.png" alt="...">，
+         截图建议：① 首页开始诊断复习 ② 答错后显示解析与薄弱点记录 ③ 新会话显示"已载入历史记忆"与靶向题标签 ④ 学习总览 -->
+    <div class="grid">
+      <figure class="shot"><div class="ph">截图占位 ①<br>首页：选择学习者与学科，开始诊断复习</div><figcaption>首次开卷：无历史记忆，自动出诊断题摸基础。</figcaption></figure>
+      <figure class="shot"><div class="ph">截图占位 ②<br>答错后：正确答案高亮 + 解析 + 薄弱点记录提示</div><figcaption>答错即记录：提示"已记录薄弱点，累计错 N 次"。</figcaption></figure>
+      <figure class="shot"><div class="ph">截图占位 ③<br>新会话：已载入历史记忆 + 靶向题/错题重练标签</div><figcaption>新开对话自动回忆历史，针对性出题复盘。</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <h2><span class="no">05</span>运行说明</h2>
+    <p class="lead">环境：Python 3.11+；依赖见 <code class="inline">qoder/requirements.txt</code>（fastapi、uvicorn、httpx、pydantic；测试用 pytest）。PowerContext 默认 Basic memory 模式，<strong>无需任何模型 API Key</strong>。</p>
+    <pre><span class="c"># 终端 1：启动 PowerContext Server（仓库根目录，默认 127.0.0.1:8000）</span>
+uv sync --extra cli --extra server
+uv run powercontext server run
+
+<span class="c"># 终端 2：启动复习助手（qoder 目录，默认 127.0.0.1:8080）</span>
+cd qoder
+uv run python run.py          <span class="c"># 或：python -m pip install -r requirements.txt; python run.py</span>
+
+<span class="c"># 浏览器打开体验入口</span>
+<span class="c"># http://127.0.0.1:8080/</span></pre>
+  </div>
+</section>
+
+<section id="verify">
+  <div class="wrap">
+    <h2><span class="no">06</span>验证样例</h2>
+    <p class="lead">三组可复现样例，覆盖离线测试、端到端冒烟与手动体验，均能观察到 PowerContext 记忆读写记录。</p>
+    <ol class="steps">
+      <li><b>离线自动化测试（无需真实 Server）</b>在 qoder 目录执行 <code class="inline">python -m pytest -q</code>，使用内存版假 PowerContext 跑通"写记忆 → 读历史 → 靶向出题"闭环。<span class="expect">预期：9 passed。</span></li>
+      <li><b>端到端冒烟测试（两个服务运行中）</b>执行 <code class="inline">python scripts/smoke_test.py</code>，依次验证存活探针、首次诊断出题、答错写入记忆、总览读回、新会话靶向薄弱点。<span class="expect">预期：每步 [PASS]，退出码 0。</span></li>
+      <li><b>网页手动验证</b>打开首页 → 故意答错几题 → 查看学习总览 → 再开新一轮复习。<span class="expect">预期：总览读回薄弱点/错题/进度；新会话出现"已载入历史记忆"提示与靶向题标签。</span></li>
+    </ol>
+  </div>
+</section>
+
+<section id="repo">
+  <div class="wrap">
+    <h2><span class="no">07</span>代码仓库与开发记录</h2>
+    <p class="lead">完整源码位于参赛仓库 <code class="inline">qoder/</code> 目录（分支 <code class="inline">2026-competition-ecosystem</code>），不修改仓库任何原有源码，仅通过 PowerContext HTTP API 接入。</p>
+    <div class="grid">
+      <div class="card"><h3>代码仓库</h3><p><a href="https://github.com/2683382292-collab/powercontext/tree/2026-competition-ecosystem/qoder" target="_blank" rel="noopener">github.com/2683382292-collab/powercontext · qoder/</a><br>含运行说明、依赖清单、测试与冒烟脚本。</p></div>
+      <div class="card"><h3>Qoder 开发过程</h3><p>需求拆解、架构设计、全部编码、调试与测试验证均在 Qoder 中完成；关键对话记录与账号 UID 随提交材料提供。</p></div>
+      <div class="card"><h3>技术分工</h3><p>PowerContext 承担全部记忆与上下文能力（薄弱点/错题/进度的保存与复用）；Qoder 承担开发并通过 Sites 发布本网站。</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>个性化复习助手 · 基于 PowerContext HTTP API</span>
+    <span>本网站通过 Qoder Sites 发布 · 开发工具：Qoder</span>
+  </div>
+</footer>
+
+</body>
+</html>
